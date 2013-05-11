@@ -18,7 +18,7 @@ class Service(tasks.Service):
         with settings(user=self.serviceUser), \
              tempfile(saveTo=dump) as tar, \
              cd('/var/lib/mailman'):
-            run('tar -c -j -f {} lists data archives'.format(tar))
+            run('/bin/tar -c -j -f {} lists data archives'.format(tar))
 
     def task_restore(self, dump):
         """
@@ -27,7 +27,7 @@ class Service(tasks.Service):
         with settings(user=self.serviceUser), \
              tempfile(uploadFrom=dump) as tar, \
              cd('/var/lib/mailman'):
-            run('tar -x -j -f {}'.format(tar))
+            run('/bin/tar -x -j -f {}'.format(tar))
 
     def task_install(self):
         """
@@ -37,7 +37,7 @@ class Service(tasks.Service):
         debconf.setDebconfValue('mailman', 'mailman/create_site_list', 'note', '')
         package.install(['mailman'])
         put('mm_cfg.py', '/etc/mailman/mm_cfg.py', use_sudo=True)
-        sudo('usermod -a -G service --home /var/lib/mailman {}'.format(self.serviceUser))
+        sudo('/usr/sbin/usermod -a -G service --home /var/lib/mailman {}'.format(self.serviceUser))
 
     def task_start(self):
         """
