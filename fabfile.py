@@ -2,6 +2,7 @@
 Tools to administer mailman.
 """
 from fabric.api import settings, put, sudo
+from fabric.contrib.console import confirm
 from braid import tasks, service, package, archive
 from braid.debian import debconf
 
@@ -28,12 +29,17 @@ class Service(tasks.Service):
         """
         Restore mailman data.
         """
-        with settings(user=self.serviceUser):
-            archive.restore({
-                'lists': 'lists',
-                'data': 'data',
-                'archives': 'archives'
-            }, dump)
+        msg = (
+            'All mailman state and archives will be replaced with the backup.\n'
+            'Do you want to proceed?'
+        )
+        if confirm(msg, default=False):
+            with settings(user=self.serviceUser):
+                archive.restore({
+                    'lists': 'lists',
+                    'data': 'data',
+                    'archives': 'archives'
+                }, dump)
 
     def task_install(self):
         """
