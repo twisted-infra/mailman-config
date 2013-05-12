@@ -1,9 +1,12 @@
+"""
+Tools to administer mailman.
+"""
 from fabric.api import settings, put, sudo
 from braid import tasks, service, package, archive
 from braid.debian import debconf
 
 from braid import config
-_hush_pyflakes = [ config ]
+__all__ = [ 'config' ]
 
 
 class Service(tasks.Service):
@@ -54,7 +57,14 @@ class Service(tasks.Service):
         """
         service.stop('mailman')
 
+    def task_restart(self):
+        """
+        Restart mailman.
+        """
+        service.restart('mailman')
 
 
 
-globals().update(Service().getTasks())
+
+tasks.addTasks(globals(), Service().getTasks())
+
