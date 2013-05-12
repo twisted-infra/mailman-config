@@ -1,6 +1,5 @@
-from fabric.api import run, cd, settings, put, sudo
-from braid import tasks, service, package
-from braid.utils import tempfile
+from fabric.api import settings, put, sudo
+from braid import tasks, service, package, archive
 from braid.debian import debconf
 
 from braid import config
@@ -15,19 +14,23 @@ class Service(tasks.Service):
         """
         Dump mailman data.
         """
-        with settings(user=self.serviceUser), \
-             tempfile(saveTo=dump) as tar, \
-             cd('/var/lib/mailman'):
-            run('/bin/tar -c -j -f {} lists data archives'.format(tar))
+        with settings(user=self.serviceUser):
+            archive.dump({
+                'lists': 'lists',
+                'data': 'data',
+                'archives': 'archives'
+            }, dump)
 
     def task_restore(self, dump):
         """
         Restore mailman data.
         """
-        with settings(user=self.serviceUser), \
-             tempfile(uploadFrom=dump) as tar, \
-             cd('/var/lib/mailman'):
-            run('/bin/tar -x -j -f {}'.format(tar))
+        with settings(user=self.serviceUser):
+            archive.restore({
+                'lists': 'lists',
+                'data': 'data',
+                'archives': 'archives'
+            }, dump)
 
     def task_install(self):
         """
