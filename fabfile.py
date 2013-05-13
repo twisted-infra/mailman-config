@@ -3,6 +3,7 @@ Tools to administer mailman.
 """
 from fabric.api import settings, put, sudo
 from fabric.contrib.console import confirm
+from twisted.python.util import sibpath
 from braid import tasks, service, package, archive
 from braid.debian import debconf
 
@@ -48,7 +49,7 @@ class Service(tasks.Service):
         debconf.setDebconfValue('mailman', 'mailman/site_languages', 'multiselect', 'en')
         debconf.setDebconfValue('mailman', 'mailman/create_site_list', 'note', '')
         package.install(['mailman'])
-        put('mm_cfg.py', '/etc/mailman/mm_cfg.py', use_sudo=True)
+        put(sibpath(__file__, 'mm_cfg.py'), '/etc/mailman/mm_cfg.py', use_sudo=True)
         sudo('/usr/sbin/usermod -a -G service --home /var/lib/mailman {}'.format(self.serviceUser))
 
     def task_start(self):
