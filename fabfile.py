@@ -5,7 +5,7 @@ from fabric.api import settings, put, sudo
 from twisted.python.util import sibpath
 from braid import tasks, service, package, archive
 from braid.debian import debconf
-from braid.util import confirm
+from braid.utils import confirm
 
 from braid import config
 __all__ = [ 'config' ]
